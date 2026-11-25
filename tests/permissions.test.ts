@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { expandRolePermissions, PERMISSIONS, ROLE_PERMISSIONS } from '../api/config/permissions.js';
+import { expandRolePermissions, PERMISSIONS, resolvePermissions, ROLE_PERMISSIONS } from '../server/config/permissions.js';
 
 describe('role permissions', () => {
   it('gives SUPER_ADMIN every canonical permission', () => {
@@ -14,5 +14,15 @@ describe('role permissions', () => {
 
   it('returns no permissions for an unknown role', () => {
     expect(expandRolePermissions(['UNKNOWN']).size).toBe(0);
+  });
+
+  it('combines role permissions with grants and deny overrides', () => {
+    const permissions = resolvePermissions(['SUPER_ADMIN'], [
+      { permission: PERMISSIONS.shopsRead, effect: 'DENY' },
+      { permission: 'custom.permission', effect: 'GRANT' },
+    ]);
+
+    expect(permissions.has(PERMISSIONS.shopsRead)).toBe(false);
+    expect(permissions.has('custom.permission')).toBe(true);
   });
 });

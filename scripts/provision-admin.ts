@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
-import { env, isSupabaseConfigured } from '../api/config/env.js';
+import { env, isSupabaseConfigured } from '../server/config/env.js';
 
 async function main() {
   if (!isSupabaseConfigured) {

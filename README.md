@@ -5,7 +5,7 @@ Full-stack administration dashboard for shop subscriptions, payment verification
 ## Stack
 
 - React 18, Vite, Tailwind CSS, TanStack Query
-- Express TypeScript API for Vercel serverless deployment
+- Express TypeScript API served by one Vercel function (`api/index.ts`), with modular backend code in `server/`
 - Supabase Auth, Postgres, RPC transactions and RLS
 - Vitest and Supertest
 

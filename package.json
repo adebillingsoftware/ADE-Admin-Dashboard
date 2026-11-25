@@ -6,11 +6,11 @@
   "description": "Backend-integrated administration dashboard for Arthi Digital Enterprises",
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
-    "dev:api": "tsx watch api/local.ts",
+    "dev:api": "tsx watch server/local.ts",
     "dev:web": "vite",
     "build": "tsc --noEmit && vite build",
     "build:web": "vite build",
-    "start:local": "node --import tsx api/local.ts",
+    "start:local": "node --import tsx server/local.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

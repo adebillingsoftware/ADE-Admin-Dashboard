@@ -73,3 +73,15 @@ export function expandRolePermissions(roles: string[]): Set<string> {
   }
   return result;
 }
+
+export function resolvePermissions(
+  roles: string[],
+  overrides: { permission: string; effect: 'GRANT' | 'DENY' }[],
+): Set<string> {
+  const result = expandRolePermissions(roles);
+  for (const override of overrides) {
+    if (override.effect === 'DENY') result.delete(override.permission);
+    else result.add(override.permission);
+  }
+  return result;
+}

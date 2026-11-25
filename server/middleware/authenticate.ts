@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { requireSupabase, getUserFromToken } from '../config/supabase.js';
 import { env, isCronConfigured } from '../config/env.js';
+import { resolvePermissions } from '../config/permissions.js';
 import { ApiError } from '../utils/ApiError.js';
 import { log } from '../utils/logger.js';
 import type { AdminContext, CustomerContext, ShopContext } from '../types/express.js';
@@ -43,11 +44,7 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
       .map((row) => (row.admin_roles as { name?: string } | null)?.name)
       .filter((name): name is string => Boolean(name));
 
-    const permissions = new Set<string>();
-    for (const row of permissionRows ?? []) {
-      if (row.effect === 'DENY') permissions.delete(row.permission);
-      if (row.effect === 'GRANT') permissions.add(row.permission);
-    }
+    const permissions = resolvePermissions(roles, permissionRows ?? []);
 
     req.admin = {
       userId: user.id,

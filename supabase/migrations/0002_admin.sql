@@ -31,7 +31,7 @@ create table if not exists public.admin_permissions (
 );
 
 -- Canonical role -> permission mapping. Backend expands roles using the same IDs
--- in api/config/permissions.ts; keep both files in sync.
+-- in server/config/permissions.ts; keep both files in sync.
 create table if not exists public.role_permissions (
   role_name text not null references public.admin_roles(name) on delete cascade,
   permission text not null,
@@ -87,3 +87,40 @@ on conflict do nothing;
 drop trigger if exists trg_admin_profiles_updated on public.admin_profiles;
 create trigger trg_admin_profiles_updated before update on public.admin_profiles
 for each row execute function public.set_updated_at();
+
+-- Identity helpers used by RLS. SECURITY DEFINER avoids recursive policy checks.
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1
+    from public.admin_profiles p
+    where p.user_id = auth.uid()
+      and p.status = 'ACTIVE'
+  );
+$$;
+
+create or replace function public.has_admin_role(p_role text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+  select exists (
+    select 1
+    from public.admin_user_roles ur
+    join public.admin_roles r on r.id = ur.role_id
+    join public.admin_profiles p on p.user_id = ur.user_id
+    where p.user_id = auth.uid()
+      and p.status = 'ACTIVE'
+      and r.name = p_role
+  );
+$$;
+
+grant execute on function public.is_admin() to authenticated, service_role;
+grant execute on function public.has_admin_role(text) to authenticated, service_role;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonicalPayload, MAX_OFFLINE_HOURS, type LicencePayload } from '../api/services/licensing.service.js';
+import { canonicalPayload, MAX_OFFLINE_HOURS, type LicencePayload } from '../server/services/licensing.service.js';
 
 describe('licence payload', () => {
   it('serializes fields in canonical order', () => {

@@ -1,4 +1,4 @@
-import app from './app.js';
+import app from '../server/app.js';
 
 /**
  * Vercel serverless entry point. Express app is exported, not started.
